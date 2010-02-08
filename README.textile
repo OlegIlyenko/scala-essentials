@@ -78,7 +78,7 @@ println(config.database.driver())
 println(config.database.url())
 </code></pre>
 
-You can also use different configuration sources. They can be found in the package *org.angelsmasterpiece.scala.commons.config*.
+You can also use different configuration sources. They can be found in the package *org.angelsmasterpiece.scala.essentials.config*.
 Following configuration sources are available (but you can also write your own):
 
 * *SystemConfigurationSource* - from System.getProperty(...)
