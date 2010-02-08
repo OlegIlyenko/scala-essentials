@@ -1,0 +1,113 @@
+h1. Overview
+
+This is general purpose library. It provides some basic utilities for the scala project. I wrote this project mostly for
+myself, but I hope you can find it also helpful. If you have some interest, ideas, or found some bugs pleas feel free to
+give me your feedback. In this case I can put more efforts to improve project and make it more useful for others.
+
+Project covers number of areas, that will be described in the next sections.
+
+h1. Command line processing
+
+It's easy and type safe to process command line arguments with CommandLine class. You can define your command line like this:
+
+<pre><code>
+class MyCommandLine extends CommandLine {
+    val argument1 = Argument[String]("argument1", optional = true)
+    val argument2 = Argument[Double]("argument2", "arg2", description = "Double argument")
+    val help = FlagArgument("help", "h", description = "Show this help")
+
+    val flag = FlagArgument("flag-arg", "fl", "My super flag")
+}
+</code></pre>
+
+Now you can start you application like this:
+
+@executable --argument1 SomeString -arg2 1.5 -fl@
+
+In your code you can use it like this:
+
+<pre><code>
+val cl = new MyCommandLine
+cl parseOrExit args
+
+val doubleVal = cl.argument2() + 2.0  // = 3.5
+
+cl.argument1.value match {
+    case Some(v) => // do something ...
+    case None => // do something ...
+}
+</code</pre>
+
+It also contains some other features like validation and usage printer
+
+h1. Configuration
+
+So you can define your configuration:
+
+<pre><code>
+case class MyConfig(s: ConfigurationSource) extends Configuration {
+
+    // You can provice source like this.
+    // By default SystemConfigurationSource would be used.
+    implicit val implicitConfigurationSource = s
+
+    val appName = Property[String]("common.appName", "Application name", "My app")
+    val version = Property[Double]("common.version", "Application version", default = 2.1)
+    val file = Property[File]("common.file", description = "Additional configuration file")
+
+    val database = new Configuration {
+        val driver = Property[String]("database.driver", default = "com.mysql.jdbc.Driver")
+        val url = Property[String]("database.url", "JDBC Database URL")
+    }
+
+    // It's optional step, but you can use it for validation during instantiation.
+    // You can also validate later manually by invoking validate(method on configuration instance)
+    validate()
+}
+</code</pre>
+
+In this case configuration would be also automatically validated during instantiation.
+
+You can use it like this:
+
+<pre><code>
+val config = MyConfig(PropertiesConfigurationSource("config.properties"))
+
+println(config.appName())
+println(config.database.driver())
+println(config.database.url())
+</code</pre>
+
+You can also use different configuration sources. They can be found in the package *org.angelsmasterpiece.scala.commons.config*.
+Following configuration sources are available (but you can also write your own):
+
+* *SystemConfigurationSource* - from System.getProperty(...)
+* *MapConfigurationSource* - from used map
+* *PropertiesConfigurationSource* - from properties file, or properties instance
+* *CommandLineConfigurationSource* - integrate with CommandLine class (takes properties by longName or alias)
+* *AggregatingConfigurationSource* - aggregates several configuration sources
+
+h1. Helpers
+
+There are also some helpers, that provide useful functions and implicit conversions.
+
+h2. IO Helper
+
+With this helper you can do following things:
+
+<pre><code>
+closeable(new PrintWriter("file.txt")) { writer =>
+    writer.println("Hello World!")
+}
+
+File("file.txt").text match {
+    case Some(text) => println(text)
+    case None => println("Nothing")
+}
+
+File("file.txt").lines
+
+File("file1.txt") write "Hello world 1!"
+</code</pre>
+
+It also contains more features. Please see the sources to find out more.
