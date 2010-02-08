@@ -36,7 +36,7 @@ cl.argument1.value match {
     case Some(v) => // do something ...
     case None => // do something ...
 }
-</code</pre>
+</code></pre>
 
 It also contains some other features like validation and usage printer
 
@@ -64,7 +64,7 @@ case class MyConfig(s: ConfigurationSource) extends Configuration {
     // You can also validate later manually by invoking validate(method on configuration instance)
     validate()
 }
-</code</pre>
+</code></pre>
 
 In this case configuration would be also automatically validated during instantiation.
 
@@ -76,7 +76,7 @@ val config = MyConfig(PropertiesConfigurationSource("config.properties"))
 println(config.appName())
 println(config.database.driver())
 println(config.database.url())
-</code</pre>
+</code></pre>
 
 You can also use different configuration sources. They can be found in the package *org.angelsmasterpiece.scala.commons.config*.
 Following configuration sources are available (but you can also write your own):
@@ -108,6 +108,6 @@ File("file.txt").text match {
 File("file.txt").lines
 
 File("file1.txt") write "Hello world 1!"
-</code</pre>
+</code></pre>
 
 It also contains more features. Please see the sources to find out more.
