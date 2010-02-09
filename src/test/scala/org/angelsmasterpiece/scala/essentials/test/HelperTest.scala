@@ -1,9 +1,8 @@
-package org.angelsmasterpiece.scala.essentials.helper
+package org.angelsmasterpiece.scala.essentials.test
 
 import org.junit.Test
 import io.Source
-import IoHelper._
-import util.matching.Regex
+import org.angelsmasterpiece.scala.essentials.helper.IoHelper._
 
 
 /**
