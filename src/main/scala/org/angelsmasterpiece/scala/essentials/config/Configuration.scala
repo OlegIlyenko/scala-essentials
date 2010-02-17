@@ -3,52 +3,84 @@ package org.angelsmasterpiece.scala.essentials.config
 import java.lang.String
 import reflect.Manifest
 import org.angelsmasterpiece.scala.essentials.convert._
+import java.lang.reflect.Method
 
 /**
  *
  * @author Oleg Ilyenko
  */
 trait Configuration {
-
     protected val converter = DefaultConverter
 
     implicit private var configSource: ConfigurationSource = new SystemConfigurationSource
 
-    case class Property[T](val name: String, val description: String = "", val default: Option[T] = None)
-                          (implicit source: ConfigurationSource = new SystemConfigurationSource, m: Manifest[T]) {
+    case class Property[T](
+        val name: String,
+        val description: String = "",
+        val default: Option[T] = None
+    ) (implicit source: ConfigurationSource = new SystemConfigurationSource, m: Manifest[T]) {
+
         def apply(): T = source(name) match {
-            case RawPropertyValue(value) => try {
-                converter.convert[String, T](value) match {
-                    case Some(result) => result
-                    case None => throw new IllegalArgumentException("Property '" + name + "' cannot be coverted. Converter for the class '" + m.erasure + "' cannot befound!")
-                }
-            } catch {
-                case e:Exception => throw new IllegalArgumentException("Property '" + name + "' cannot be coverted. Cause: " + e.getMessage, e)
-            }
+            case RawPropertyValue(value) => getRawProperty(value)
             case RealPropertyValue(realValue) => realValue.asInstanceOf[T]
-            case  EmptyPropertyValue => default match {
+            case EmptyPropertyValue => default match {
                 case Some(dv) => dv
                 case None => throw new IllegalArgumentException("Property '" + name + "' cannot be found!")
             }
         }
+
+        private def getRawProperty(value: String) = try {
+            convertRawProperty(value)
+        } catch {
+            case e: Exception => throw new IllegalArgumentException("Property '" + name + "' cannot be coverted. Cause: " + e.getMessage, e)
+        }
+
+        private def convertRawProperty(value: String) = converter.convert[String, T](value) match {
+            case Some(result) => result
+            case None => throw new IllegalArgumentException("Converter for the class '" + m.erasure + "' cannot befound!")
+        }
     }
 
-    def validate(): Unit = this.getClass.getMethods.filter(m => classOf[Property[_]].isAssignableFrom(m.getReturnType) || classOf[Configuration].isAssignableFrom(m.getReturnType)).map { m =>
-        if (classOf[Property[_]].isAssignableFrom(m.getReturnType)) m.invoke(this).asInstanceOf[Property[_]]()
-        else m.invoke(this).asInstanceOf[Configuration].validate()
+    def validate(): Unit = supportedChildren.map { m =>
+        if (isProperty(m.getReturnType))
+            m.invoke(this).asInstanceOf[Property[_]]()
+        else
+            m.invoke(this).asInstanceOf[Configuration].validate()
     }
 
-    def toString(prefix:String):String = this.getClass.getMethods
-        .filter(m => classOf[Property[_]].isAssignableFrom(m.getReturnType) || classOf[Configuration].isAssignableFrom(m.getReturnType))
-        .map { m =>
-            if (classOf[Property[_]].isAssignableFrom(m.getReturnType)) {
-                val prop:Property[_] = m.invoke(this).asInstanceOf[Property[_]]
-                prefix + m.getName  +
-                    (if (prop.default != null) " (default: " + prop.default + ")" else "") +
-                    " - " + prop.name + "" + "\n      " +
-                    (if (prop.description != "") prop.description + "\n" else "")
-            } else m.invoke(this).asInstanceOf[Configuration].toString(m.getName + ".")
-        }.mkString("\n")
+    private def supportedChildren = this.getClass.getMethods.filter(isSupportedChild(_))
 
-    override def toString = toString("")
+    private def isSupportedChild(method: Method) = isProperty(method.getReturnType) || isConfiguration(method.getReturnType)
+
+    private def isProperty(clazz: Class[_]) = classOf[Property[_]].isAssignableFrom(clazz)
+
+    private def isConfiguration(clazz: Class[_]) = classOf[Configuration].isAssignableFrom(clazz)
+
+    def toString(prefix: String): String = supportedChildren.map { m =>
+        if (isProperty(m.getReturnType))
+            renderMethod(m, prefix)
+        else
+            m.invoke(this).asInstanceOf[Configuration].toString(m.getName + ".")
+    }.mkString("\n")
+
+    private def renderMethod(method: Method, prefix: String) = {
+        val prop: Property[_] = method.invoke(this).asInstanceOf[Property[_]]
+        prefix + method.getName + renderDefaultValue(prop) + renderProperty(prop) + renderDescription(prop)
+    }
+
+    private def renderDefaultValue(prop: Property[_]) =
+        if (prop.default != null)
+            " (default: " + prop.default + ")"
+        else
+            ""
+
+    private def renderProperty(prop: Property[_]) = " - " + prop.name + "\n      "
+
+    private def renderDescription(prop: Property[_]) =
+        if (prop.description != "")
+            prop.description + "\n"
+        else
+            ""
+
+    override def toString = toString(prefix = "")
 }
