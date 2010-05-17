@@ -38,9 +38,9 @@ trait CommandLine {
     }
 
     private def getArgumentFindFunction(argument: String) =
-        if (arguments startsWith longPrefix)
+        if (argument startsWith longPrefix)
             Some((a: Argument[_]) => (longPrefix + a.longName) == argument)
-        else if (arguments startsWith shortPrefix)
+        else if (argument startsWith shortPrefix)
             Some((a: Argument[_]) => (shortPrefix + a.shortName) == argument)
         else
             None
@@ -87,7 +87,7 @@ trait CommandLine {
     private def falseAbsentBooleanArguments() =
         arguments.filter(a => !a.present && !a.parameter).foreach(_.asInstanceOf[Argument[Boolean]].value = Some(false))
 
-    def parseOrExit(source: Array[String]): Unit = (parse(source): @unchecked) match {
+    def parseOrExit(source: Array[String]): Unit = parse(source) match {
         case Some(errors) =>
             println(errors.map(_.toString).mkString("\n"))
             println
@@ -98,7 +98,7 @@ trait CommandLine {
 
     def usage: String = usageTitle + usageBody
 
-    protected def usageTitle = "Usage:\n application.executable [ARGUMENTS]\n\nArguments:\n"
+    protected def usageTitle = "Usage:\n\tapplication.executable [ARGUMENTS]\n\nArguments:\n"
 
     protected def usageBody = arguments.map(getArgumentUsage).mkString("\n")
 

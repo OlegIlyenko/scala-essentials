@@ -29,6 +29,21 @@ trait Configuration {
             }
         }
 
+        def is: T = apply()
+
+        def set_?(): Boolean = source(name) match {
+            case EmptyPropertyValue => false
+            case _ => true
+        }
+
+        def default_?(): Boolean = source(name) match {
+            case EmptyPropertyValue => default match {
+                case Some(dv) => true
+                case None => false
+            }
+            case _ => false
+        }
+
         private def getRawProperty(value: String) = try {
             convertRawProperty(value)
         } catch {

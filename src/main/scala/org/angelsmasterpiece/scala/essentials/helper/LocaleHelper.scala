@@ -12,7 +12,6 @@ import BooleanConverter._
 object LocaleHelper {
     def findLocale(desired: Locale, available: List[Locale]) =
         available.find(l => eq(desired.getLanguage, l.getLanguage) && eq(desired.getCountry, l.getCountry) && eq(desired.getVariant, l.getVariant)) match {
-
             case Some(locale) => Some(locale)
             case None => available.find(l => eq(desired.getLanguage, l.getLanguage) && eq(desired.getCountry, l.getCountry) && !l.getVariant) match {
                 case Some(locale) => Some(locale)
