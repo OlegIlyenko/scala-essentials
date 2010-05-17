@@ -6,6 +6,30 @@ give me your feedback. In this case I can put more efforts to improve project an
 
 Project covers number of areas, that will be described in the next sections.
 
+h1. Maven configuration
+
+In order to use scala-essentials withing Maven2 project you should add one new repository in your *pom.xml*:
+
+<pre><code>
+    <repositories>
+        <repository>
+            <id>angelsmasterpiece-repo</id>
+            <name>Angel's Masterpiece Maven 2 Repository</name>
+            <url>http://github.com/OlegIlyenko/angelsmasterpiece-maven-repo/raw/master</url>
+        </repository>
+    </repositories>
+</code></pre>
+
+Now you can add this dependency:
+
+<pre><code>
+    <dependency>
+        <groupId>org.angelsmasterpiece</groupId>
+        <artifactId>scala-essentials</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </dependency>
+</code></pre>
+
 h1. Command line processing
 
 It's easy and type safe to process command line arguments with CommandLine class. You can define your command line like this:
