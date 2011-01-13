@@ -1,4 +1,4 @@
-package org.angelsmasterpiece.scala.essentials.helper
+package org.am.scala.essentials.helper
 
 import java.util.Locale
 import java.io.File

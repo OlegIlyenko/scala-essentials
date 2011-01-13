@@ -1,8 +1,8 @@
-package org.angelsmasterpiece.scala.essentials.option
+package org.am.scala.essentials.option
 
 import collection._
 import mutable.{ListBuffer}
-import org.angelsmasterpiece.scala.essentials.convert.{AggregatingConverter, DefaultConverter}
+import org.am.scala.essentials.convert.{AggregatingConverter, DefaultConverter}
 
 /**
  *

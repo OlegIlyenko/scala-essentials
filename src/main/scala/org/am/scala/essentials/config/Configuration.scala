@@ -1,8 +1,8 @@
-package org.angelsmasterpiece.scala.essentials.config
+package org.am.scala.essentials.config
 
 import java.lang.String
 import reflect.Manifest
-import org.angelsmasterpiece.scala.essentials.convert._
+import org.am.scala.essentials.convert._
 import java.lang.reflect.Method
 
 /**

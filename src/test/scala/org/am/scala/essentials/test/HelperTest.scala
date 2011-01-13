@@ -1,9 +1,9 @@
-package org.angelsmasterpiece.scala.essentials.test
+package org.am.scala.essentials.test
 
-import org.junit.Test
 import io.Source
-import org.angelsmasterpiece.scala.essentials.helper.IoHelper._
-import org.angelsmasterpiece.scala.essentials.helper.LocalizedFile
+import org.am.scala.essentials.helper.IoHelper._
+import org.am.scala.essentials.helper.LocalizedFile
+import org.junit.Test
 
 
 /**

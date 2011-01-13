@@ -1,4 +1,4 @@
-package org.angelsmasterpiece.scala.essentials.reflection
+package org.am.scala.essentials.reflection
 
 import collection.mutable.ListBuffer
 import java.lang.reflect.Method
